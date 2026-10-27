@@ -1,0 +1,34 @@
+---
+import { zonas } from '../data';
+
+interface Props { mini?: boolean }
+const { mini = false } = Astro.props;
+
+const ticks = Array.from({ length: 60 }, (_, i) => i * 6);
+const pos = (deg: number, r: number) => {
+  const a = (deg * Math.PI) / 180;
+  return { x: +(Math.sin(a) * r).toFixed(2), y: +(-Math.cos(a) * r).toFixed(2) };
+};
+---
+<svg class:list={['dial', { 'dial--mini': mini }]} viewBox="-110 -110 220 220" aria-hidden="true" focusable="false">
+  <g class="dial-ticks">
+    {ticks.map((d) => {
+      const a = pos(d, 93);
+      const b = pos(d, d % 30 === 0 ? 100 : 97);
+      return <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} />;
+    })}
+  </g>
+  {!mini && zonas.map((z) => {
+    const p = pos(z.angulo, 104);
+    return (
+      <g class="dial-zone" data-dial-zone={z.n} transform={`translate(${p.x} ${p.y})`}>
+        <circle r="8.5" />
+        <text y="3.4" text-anchor="middle">{z.n}</text>
+      </g>
+    );
+  })}
+  <g class="dial-pointer" style="transform: rotate(var(--ang, -100deg))">
+    <path d="M0 -84 L-5 -94 L5 -94 Z" />
+  </g>
+  {mini && <text class="dial-center" y="26" text-anchor="middle" data-dial-center>1</text>}
+</svg>

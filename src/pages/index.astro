@@ -1,0 +1,423 @@
+---
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import Photo from '../components/Photo.astro';
+import Dial from '../components/Dial.astro';
+import { casa, whatsapp, mapa, firma, zonas } from '../data';
+import { photo } from '../photos';
+import logoBlanco from '../../assets/logos/propietas-blanco.svg';
+
+const titulo = 'Casa en venta en Barrio La Isla, Rawson · 1.800 m² de parcela | Mendoza 836';
+const descripcion =
+  'Casa de 5 ambientes, 2 dormitorios y 90 m² sobre una parcela de 1.800 m², con patio parquizado y riego automatizado. Mendoza 836, Barrio La Isla, Rawson. USD 140.000. Propietas Inmobiliaria.';
+
+const hero = photo(9);
+const og = await getImage({ src: hero.src, width: 1200, height: 630, format: 'jpg', fit: 'cover' });
+const ogUrl = new URL(og.src, casa.url).href;
+
+const galeria = await Promise.all(
+  Array.from({ length: 26 }, async (_, i) => {
+    const p = photo(i + 1);
+    const full = await getImage({ src: p.src, width: 1600, format: 'webp' });
+    return { n: i + 1, alt: p.alt, full: full.src };
+  }),
+);
+
+const frase = 'Un patio que se riega solo. 1.800 metros de parcela. Una zona tranquila de Rawson.'.split(' ');
+
+const faq = [
+  ['¿Cuánto sale y en qué moneda?', 'USD 140.000, en dólares.'],
+  ['¿Aceptan permutas o financiación?', 'Sí, se aceptan permutas y financiación. Las condiciones se consultan por WhatsApp.'],
+  ['¿Cuántos metros tiene?', 'La casa tiene 90 m² y la parcela 1.800 m². Son 5 ambientes, con 2 dormitorios y 1 baño.'],
+  ['¿Dónde queda?', 'En Mendoza 836, Barrio La Isla, Rawson, Chubut. Es una zona semi urbana y tranquila.'],
+  ['¿Tiene entrada de auto?', 'Sí, la casa tiene entrada de auto.'],
+  ['¿Tiene depósito?', 'Sí, la parcela tiene un depósito, aparte de la casa.'],
+  ['¿Cómo coordino una visita?', `Escribinos por WhatsApp al ${firma.telefono} y coordinamos un día y un horario.`],
+  ['¿Quién la comercializa?', `${firma.nombre}. Corredor responsable: ${firma.corredor}, Corredor Inmobiliario ${firma.matricula}.`],
+];
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateListing',
+  name: casa.nombre,
+  description: descripcion,
+  url: casa.url,
+  image: ogUrl,
+  offers: { '@type': 'Offer', price: 140000, priceCurrency: 'USD' },
+  about: {
+    '@type': 'SingleFamilyResidence',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Mendoza 836',
+      addressLocality: 'Rawson',
+      addressRegion: 'Chubut',
+      addressCountry: 'AR',
+    },
+    floorSize: { '@type': 'QuantitativeValue', value: 90, unitCode: 'MTK' },
+    lotSize: { '@type': 'QuantitativeValue', value: 1800, unitCode: 'MTK' },
+    numberOfRooms: 5,
+    numberOfBedrooms: 2,
+    numberOfBathroomsTotal: 1,
+  },
+};
+---
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#2e3092" />
+    <link rel="canonical" href={casa.url + '/'} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="Propietas Inmobiliaria" />
+    <meta property="og:title" content="Mendoza 836 · 1.800 m² de parcela en Barrio La Isla, Rawson" />
+    <meta property="og:description" content="Casa de 5 ambientes con patio parquizado y riego automatizado. USD 140.000." />
+    <meta property="og:url" content={casa.url + '/'} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={hero.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  </head>
+  <body>
+    <a class="skip" href="#casa">Ir al contenido</a>
+
+    <!-- Barra de zona: aparece al salir del hero -->
+    <div class="rail" data-rail aria-hidden="true" inert>
+      <div class="wrap">
+        <img class="rail-logo" src={logoBlanco.src} alt="" width="65" height="26" />
+        <div class="rail-dial"><Dial mini /></div>
+        <p class="rail-name"><span data-zone-name>La casa</span><small>Mendoza 836</small></p>
+        <a class="btn btn--sm" href={whatsapp} target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </div>
+
+    <header class="hero" data-hero data-zone="1">
+      <div class="wrap">
+        <div class="hero-top">
+          <img class="hero-logo" src={logoBlanco.src} alt="Propietas Inmobiliaria" width="100" height="40" />
+        </div>
+        <div class="hero-grid">
+          <div>
+            <h1 data-rv>1.800 m² de parcela y el patio ya hecho</h1>
+            <p class="lead" data-rv style="--d:80ms">Casa de 5 ambientes en Barrio La Isla, Rawson, con riego automatizado y entrada de auto.</p>
+            <div class="hero-price" data-rv style="--d:160ms">
+              <strong>{casa.precio}</strong>
+              <span>Venta. Acepta permutas y financiación, a consultar.</span>
+            </div>
+            <a class="btn" data-rv style="--d:240ms" href={whatsapp} target="_blank" rel="noopener">Consultar por WhatsApp</a>
+          </div>
+          <div class="hero-dial" data-rv style="--d:120ms">
+            <div class="dial-photo">
+              <div class="photo-clip">
+                <Photo n={9} sizes="(min-width: 900px) 520px, 90vw" eager />
+              </div>
+              <Dial />
+            </div>
+            <nav class="zonas-nav" aria-label="Recorrido de la casa">
+              {zonas.map((z) => (
+                <a href={`#${z.id}`} data-zone-link={z.n}><b>{z.n}</b> {z.nombre}</a>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Zona 1 -->
+      <section class="sec" id="casa" data-zone="1">
+        <div class="wrap casa-grid">
+          <div class="sticky">
+            <h2 data-rv>Cinco ambientes en 90 m²</h2>
+            <p class="lead" data-rv>Living comedor, cocina, dos dormitorios y un baño. Techos con vigas de madera y 14 años de antigüedad.</p>
+            <dl class="readouts" data-rv>
+              <div><dt>Superficie</dt><dd>90<small>m²</small></dd></div>
+              <div><dt>Ambientes</dt><dd>5</dd></div>
+              <div><dt>Dormitorios</dt><dd>2</dd></div>
+              <div><dt>Baño</dt><dd>1</dd></div>
+              <div><dt>Antigüedad</dt><dd>14<small>años</small></dd></div>
+            </dl>
+          </div>
+          <div class="mosaic-casa">
+            <div class="a" data-rv><Photo n={20} sizes="(min-width: 900px) 280px, 46vw" /></div>
+            <div class="b" data-rv style="--d:80ms"><Photo n={25} sizes="(min-width: 900px) 280px, 46vw" /></div>
+            <div class="c" data-rv style="--d:120ms"><Photo n={17} sizes="(min-width: 900px) 280px, 46vw" /></div>
+            <div class="d" data-rv><Photo n={22} sizes="(min-width: 900px) 580px, 92vw" /></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Zona 2 -->
+      <section class="sec sec--azul" id="patio" data-zone="2">
+        <div class="wrap">
+          <div class="patio-head">
+            <h2 data-rv>Un patio que se riega solo</h2>
+            <p class="lead" data-rv style="--d:80ms">Césped parejo, cercos vivos con flores y árboles. El riego automatizado ya está instalado.</p>
+          </div>
+          <div class="patio-grid">
+            <div class="p1" data-rv><Photo n={9} sizes="(min-width: 900px) 760px, 92vw" /></div>
+            <div class="p2" data-rv style="--d:80ms"><Photo n={5} sizes="(min-width: 900px) 380px, 92vw" /></div>
+            <div class="p3" data-rv style="--d:120ms"><Photo n={11} sizes="(min-width: 900px) 380px, 92vw" /></div>
+            <div class="p4" data-rv><Photo n={2} sizes="(min-width: 900px) 1180px, 92vw" /></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Frase -->
+      <section class="frase" aria-label="Resumen">
+        <div class="wrap">
+          <p data-frase>
+            {frase.map((w) => <><span class="w">{w}</span>{' '}</>)}
+          </p>
+        </div>
+      </section>
+
+      <!-- Zona 3 -->
+      <section class="sec sec--papel" id="parcela" data-zone="3">
+        <div class="wrap parcela-grid">
+          <figure class="plano" data-rv>
+            <svg viewBox="-8 -8 416 488" role="img" aria-label="Croquis de la parcela: la casa abajo a la izquierda, el depósito arriba a la derecha y la entrada sobre el frente, abajo a la derecha">
+              <g class="grid">
+                {[80, 160, 240, 320].map((p) => <line x1={p} y1="0" x2={p} y2="440" />)}
+                {[88, 176, 264, 352].map((p) => <line x1="0" y1={p} x2="400" y2={p} />)}
+              </g>
+              <path class="lote" d="M290 440 H0 V0 H400 V440 H379" />
+              <rect class="deposito" x="203" y="19" width="150" height="48" />
+              <text class="lbl-dep" x="278" y="48" text-anchor="middle">Depósito</text>
+              <rect class="casa-m2" x="56" y="285" width="190" height="77" />
+              <text class="lbl-casa-w" x="151" y="319" text-anchor="middle">Casa</text>
+              <text class="lbl-casa-w" x="151" y="340" text-anchor="middle">90 m²</text>
+              <text x="200" y="170" text-anchor="middle" style="font-size:22px">Parcela</text>
+              <text x="200" y="198" text-anchor="middle" style="font-size:22px">1.800 m²</text>
+              <path class="flecha" d="M334 470 V446 M327 454 L334 446 L341 454" />
+              <text class="lbl-ent" x="334" y="486" text-anchor="middle">Entrada</text>
+            </svg>
+            <figcaption>Croquis ilustrativo de la distribución, sin escala. No es un plano de mensura.</figcaption>
+          </figure>
+          <div>
+            <h2 data-rv>Una parcela de 1.800 m²</h2>
+            <p class="lead" data-rv style="--d:80ms">Es veinte veces la superficie de la casa. Tiene entrada de auto, depósito y lugar de sobra para el parque.</p>
+            <div class="parcela-photos" data-rv style="--d:120ms">
+              <div><Photo n={16} sizes="(min-width: 900px) 280px, 46vw" /></div>
+              <div><Photo n={8} sizes="(min-width: 900px) 280px, 46vw" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Zona 4 -->
+      <section class="sec sec--azul" id="barrio" data-zone="4">
+        <div class="wrap barrio-grid">
+          <div>
+            <h2 data-rv>Barrio La Isla, Rawson</h2>
+            <p class="lead" data-rv style="--d:80ms">Zona semi urbana y tranquila, en Rawson, Chubut.</p>
+            <p class="barrio-dir" data-rv style="--d:120ms">{casa.direccion}</p>
+            <a class="btn" data-rv style="--d:160ms" href={mapa} target="_blank" rel="noopener">Ver en Google Maps</a>
+          </div>
+          <div class="barrio-photos">
+            <div class="a" data-rv><Photo n={4} sizes="(min-width: 900px) 360px, 46vw" /></div>
+            <div class="b" data-rv style="--d:100ms"><Photo n={13} sizes="(min-width: 900px) 360px, 46vw" /></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Galería -->
+      <section class="sec" id="fotos">
+        <div class="wrap">
+          <h2 data-rv>Todas las fotos</h2>
+          <div class="galeria-cols">
+            {galeria.map((g) => (
+              <button type="button" data-full={g.full} data-alt={g.alt} aria-label={`Ampliar foto ${g.n}: ${g.alt}`}>
+                <Photo n={g.n} sizes="(min-width: 1100px) 300px, (min-width: 720px) 30vw, 46vw" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Zona 5 -->
+      <section class="sec sec--hondo consultar" id="consultar" data-zone="5">
+        <div class="wrap consultar-grid">
+          <div>
+            <h2 data-rv>Consultá por Mendoza 836</h2>
+            <p class="precio-grande" data-rv style="--d:80ms">{casa.precio}</p>
+            <p class="cond" data-rv style="--d:120ms">Acepta permutas y financiación. Condiciones a consultar.</p>
+            <a class="btn" data-rv style="--d:160ms" href={whatsapp} target="_blank" rel="noopener">Consultar por WhatsApp</a>
+            <p class="btn-note" data-rv>Respondemos desde Propietas Inmobiliaria.</p>
+          </div>
+          <div class="faq" data-rv style="--d:100ms">
+            {faq.map(([q, a]) => (
+              <details>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <div class="wrap">
+        <div class="pie-grid">
+          <div>
+            <img class="logo" src={logoBlanco.src} alt="Propietas Inmobiliaria" width="110" height="44" />
+            <p>{firma.nombre}. Empresa familiar con más de 20 años en Rawson.</p>
+          </div>
+          <div>
+            <h3>Contacto</h3>
+            <ul>
+              <li><a href={whatsapp} target="_blank" rel="noopener">WhatsApp {firma.telefono}</a></li>
+              <li><a href={`mailto:${firma.email}`}>{firma.email}</a></li>
+              <li>{firma.oficina}</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Seguinos</h3>
+            <ul>
+              <li><a href={firma.web} target="_blank" rel="noopener">ipropietas.com.ar</a></li>
+              <li><a href={firma.instagram} target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href={firma.facebook} target="_blank" rel="noopener">Facebook</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="legal">
+          <p>{firma.nombre} · {firma.corredor}, Corredor Inmobiliario {firma.matricula} · {firma.razonSocial} CUIT {firma.cuit} · {firma.oficina}.</p>
+          <p>Las imágenes, medidas y superficies son ilustrativas y pueden sufrir modificaciones. Precios y disponibilidad sujetos a cambio sin previo aviso.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Barra inferior móvil -->
+    <div class="dock" data-dock>
+      <strong>{casa.precio}</strong>
+      <a class="btn btn--sm" href={whatsapp} target="_blank" rel="noopener">Consultar por WhatsApp</a>
+    </div>
+
+    <dialog class="visor" data-visor aria-label="Foto ampliada">
+      <div class="visor-body">
+        <img alt="" data-visor-img />
+        <div class="visor-bar">
+          <p data-visor-cap></p>
+          <button type="button" data-prev aria-label="Foto anterior">←</button>
+          <button type="button" data-next aria-label="Foto siguiente">→</button>
+          <button type="button" data-close>Cerrar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script define:vars={{ zonas }}>
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+      /* Programador: indicador, zona activa y barras */
+      const dials = $$('.dial');
+      const pointers = $$('.dial-pointer');
+      const zoneEls = $$('[data-dial-zone]');
+      const links = $$('[data-zone-link]');
+      zoneEls.forEach((e) => e.addEventListener('click', () => {
+        const z = zonas.find((x) => x.n === Number(e.dataset.dialZone));
+        document.getElementById(z.id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+      }));
+      const nameEl = document.querySelector('[data-zone-name]');
+      const centerEl = document.querySelector('[data-dial-center]');
+      const setZone = (n) => {
+        const z = zonas.find((x) => x.n === n);
+        if (!z) return;
+        dials.forEach((d) => d.style.setProperty('--ang', z.angulo + 'deg'));
+        zoneEls.forEach((e) => e.classList.toggle('is-on', Number(e.dataset.dialZone) === n));
+        links.forEach((l) => l.classList.toggle('is-on', Number(l.dataset.zoneLink) === n));
+        if (nameEl) nameEl.textContent = z.nombre;
+        if (centerEl) centerEl.textContent = String(n);
+      };
+      setZone(1);
+
+      /* Barrido inicial del indicador */
+      if (!reduce) {
+        let i = 4;
+        const tick = () => {
+          setZone(zonas[i].n);
+          i -= 1;
+          if (i >= 0) setTimeout(tick, 260);
+          else setTimeout(() => setZone(1), 420);
+        };
+        setTimeout(() => { setZone(5); setTimeout(tick, 320); }, 700);
+      }
+
+      const sections = $$('[data-zone]');
+      const zio = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) setZone(Number(e.target.dataset.zone));
+          });
+        },
+        { rootMargin: '-45% 0px -50% 0px' },
+      );
+      sections.forEach((s) => zio.observe(s));
+
+      /* Barra de zona y barra inferior al salir del hero */
+      const rail = document.querySelector('[data-rail]');
+      const dock = document.querySelector('[data-dock]');
+      const hero = document.querySelector('[data-hero]');
+      new IntersectionObserver(
+        ([e]) => {
+          const on = !e.isIntersecting;
+          rail.classList.toggle('is-on', on);
+          dock.classList.toggle('is-on', on);
+          rail.toggleAttribute('inert', !on);
+          rail.setAttribute('aria-hidden', String(!on));
+        },
+        { threshold: 0, rootMargin: '-64px 0px 0px 0px' },
+      ).observe(hero);
+
+      /* Entradas */
+      const rio = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('in'); rio.unobserve(e.target); }
+        }),
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+      );
+      $$('[data-rv]').forEach((el) => rio.observe(el));
+
+      /* Frase que se enciende palabra por palabra */
+      const words = $$('.frase .w');
+      const wio = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('on'); wio.unobserve(e.target); }
+        }),
+        { rootMargin: '0px 0px -30% 0px', threshold: 1 },
+      );
+      words.forEach((w) => wio.observe(w));
+
+      /* Visor de fotos */
+      const visor = document.querySelector('[data-visor]');
+      const vImg = document.querySelector('[data-visor-img]');
+      const vCap = document.querySelector('[data-visor-cap]');
+      const thumbs = $$('.galeria-cols button');
+      let cur = 0;
+      const show = (i) => {
+        cur = (i + thumbs.length) % thumbs.length;
+        const b = thumbs[cur];
+        vImg.src = b.dataset.full;
+        vImg.alt = b.dataset.alt;
+        vCap.textContent = `${cur + 1} de ${thumbs.length}. ${b.dataset.alt}`;
+      };
+      thumbs.forEach((b, i) => b.addEventListener('click', () => { show(i); visor.showModal(); }));
+      visor.querySelector('[data-prev]').addEventListener('click', () => show(cur - 1));
+      visor.querySelector('[data-next]').addEventListener('click', () => show(cur + 1));
+      visor.querySelector('[data-close]').addEventListener('click', () => visor.close());
+      visor.addEventListener('click', (e) => { if (e.target === visor) visor.close(); });
+      visor.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') show(cur - 1);
+        if (e.key === 'ArrowRight') show(cur + 1);
+      });
+    </script>
+  </body>
+</html>
